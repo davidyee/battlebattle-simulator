@@ -26,6 +26,14 @@ public class CardTester {
         public String toString() {
             return String.format("%s: %d", name, wins);
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getWins() {
+            return wins;
+        }
     }
 
     public Result[] runTest(int numGames, Class<? extends Card> card1Class, Class<? extends Card> card2Class)
@@ -71,7 +79,7 @@ public class CardTester {
         sb.append(String.format("Results (%d games): ", total) + System.lineSeparator());
         for (Result r : results) {
             sb.append("  " + r.toString());
-            sb.append(String.format(" (%.2f%%) ", (double) r.wins / total * 100));
+            sb.append(String.format(" (%.2f%%) ", (double) r.wins / total * 100f));
             sb.append(System.lineSeparator());
         }
 

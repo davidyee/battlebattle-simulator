@@ -13,6 +13,9 @@ public class Action {
     private boolean useSpecialAbilityBefore;
     private boolean useSpecialAbilityAfter;
 
+    // Indicates if already the best action for the current round
+    private boolean bestAction;
+
     public enum State {
         WIN, LOSE, TIE;
     }
@@ -22,6 +25,8 @@ public class Action {
         this.card = card;
         this.useToken = useToken;
         this.attack = attack;
+        
+        if(useToken) bestAction = true;
     }
 
     public Action(Attack attack) {
@@ -50,11 +55,19 @@ public class Action {
     public int getAttack() {
         return attack;
     }
+    
+    public void setBestAction(boolean bestAction) {
+        this.bestAction = bestAction;
+    }
+
+    public boolean isBestAction() {
+        return bestAction;
+    }
 
     public void setSpecialAbilityBefore(boolean enabled) {
         this.useSpecialAbilityBefore = enabled;
     }
-    
+
     public void setSpecialAbilityAfter(boolean enabled) {
         this.useSpecialAbilityAfter = enabled;
     }
@@ -106,11 +119,11 @@ public class Action {
         if (one.useSpecialAbilityBefore) {
             one.applySpecialAbilityBefore(two.getCard());
         }
-        
+
         if (two.useSpecialAbilityBefore) {
             two.applySpecialAbilityBefore(one.getCard());
         }
-        
+
         // Apply Attack
         if (one.getAttack() > two.getAttack()) {
             --two.card.health;

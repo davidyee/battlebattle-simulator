@@ -1,10 +1,18 @@
 package com.palette.battlebattle.simulator;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.reflections.Reflections;
@@ -38,25 +46,42 @@ public class Simulator {
         CardTester ct = new CardTester();
         Reflections reflections = new Reflections("com.palette.battlebattle.simulator.card.impl");
         Set<Class<? extends Card>> cardsFound = reflections.getSubTypesOf(Card.class);
-        List<Class<? extends Card>> cardsList1 = new ArrayList<>(cardsFound);
+        List<Class<? extends Card>> cardsList = new ArrayList<>(cardsFound);
 
         Set<CardSet> cardSets = new LinkedHashSet<>();
-        for (Class<? extends Card> card : cardsList1) {
-            for (Class<? extends Card> card2 : cardsList1) {
+        for (Class<? extends Card> card : cardsList) {
+            for (Class<? extends Card> card2 : cardsList) {
                 CardSet cardSet = new CardSet(card, card2);
                 cardSets.add(cardSet);
             }
         }
 
+        ResultMatrix resultMatrix = new ResultMatrix(cardsList);
         if (cardSets.size() > 0) {
             LOGGER.info(
                     String.format("Running simulation for %d card sets...", cardSets.size()) + System.lineSeparator());
             for (CardSet cs : cardSets) {
                 Result[] results = ct.runTest(NUMBER_OF_ROUNDS, cs.getOne(), cs.getTwo());
-                LOGGER.info(ct.getFormattedOutput(results));
+                LOGGER.debug(ct.getFormattedOutput(results));
+
+                int total = Stream.of(results).map(Result::getWins).mapToInt(Integer::intValue).sum();
+                resultMatrix.insertResult(results[0], results[1], total);
             }
         } else {
             LOGGER.error("No cards found! Please check that card implementations exist in the correct package!");
+        }
+
+        LOGGER.info(resultMatrix.getPrettyMatrix());
+
+        // Output to file
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        LocalDateTime now = LocalDateTime.now();
+
+        Path path = Paths.get(String.format("result-%s.csv", dtf.format(now)));
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            writer.write(resultMatrix.getPrettyMatrix());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
