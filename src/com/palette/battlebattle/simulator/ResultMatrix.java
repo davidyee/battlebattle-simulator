@@ -39,7 +39,7 @@ public class ResultMatrix {
         firstResult.totalGames += totalGames;
         firstResult.totalWins += one.getWins();
         String[] column = firstResult.data;
-        column[rowPos] = String.format("%d/%d (%.2f%%)", one.getWins(), totalGames, (double) two.getWins()/totalGames * 100f);
+        column[rowPos] = String.format("%d/%d (%.2f%%)", one.getWins(), totalGames, (double) one.getWins()/totalGames * 100f);
 
         // Second result
         ResultMatrixResult secondResult = cardResults.get(rowPos);
