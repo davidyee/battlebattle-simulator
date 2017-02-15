@@ -10,6 +10,7 @@ public class Action {
     private final Card card;
     private final boolean useToken;
     private int attack;
+    private final int initialAttack; // keeps track of the initial attack value
     private boolean useSpecialAbilityBefore;
     private boolean useSpecialAbilityAfter;
 
@@ -25,8 +26,10 @@ public class Action {
         this.card = card;
         this.useToken = useToken;
         this.attack = attack;
-        
-        if(useToken) bestAction = true;
+        this.initialAttack = attack;
+
+        if (useToken)
+            bestAction = true;
     }
 
     public Action(Attack attack) {
@@ -34,6 +37,7 @@ public class Action {
         this.card = attack.getCard();
         this.useToken = false;
         this.attack = attack.getRoll();
+        this.initialAttack = attack.getRoll();
     }
 
     public Card getCard() {
@@ -55,7 +59,11 @@ public class Action {
     public int getAttack() {
         return attack;
     }
-    
+
+    public int getInitialAttack() {
+        return initialAttack;
+    }
+
     public void setBestAction(boolean bestAction) {
         this.bestAction = bestAction;
     }
@@ -123,6 +131,8 @@ public class Action {
         if (two.useSpecialAbilityBefore) {
             two.applySpecialAbilityBefore(one.getCard());
         }
+
+        two.getCard().applySecondCardAdvantageBeforeEvaluation(two, one);
 
         // Apply Attack
         if (one.getAttack() > two.getAttack()) {

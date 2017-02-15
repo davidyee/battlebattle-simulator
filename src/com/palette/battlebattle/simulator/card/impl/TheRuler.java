@@ -11,13 +11,23 @@ public class TheRuler extends Card {
     }
 
     @Override
+    public void applySecondCardAdvantageBeforeEvaluation(Action myAction, Action opponentAction) {
+        // This clause usually only applies when dualing another card that
+        // forces a win (e.g. against another ruler)
+        if (myAction.isUseToken() && opponentAction.getAttack() == Integer.MAX_VALUE) {
+            opponentAction.setAttack(opponentAction.getInitialAttack());
+        }
+    }
+
+    @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
 
         // Play conservatively!
         // Don't use your token unless you are going to lose!
         if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) == State.LOSE) {
-            Action action = new Action(this, true, Integer.MAX_VALUE);
+            Action action = new Action(this, true, myRoll.getAttack());
+            action.setAttack(Integer.MAX_VALUE);
             LOGGER.debug(String.format("%s is going to use a token in order to win the round!",
                     this.getClass().getSimpleName()));
             return action;

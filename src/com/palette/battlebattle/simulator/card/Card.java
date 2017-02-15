@@ -67,6 +67,22 @@ public abstract class Card {
     }
 
     /**
+     * Apply the advantage that a second card may receive since it played after
+     * the first card. This method is always run; therefore, any pre-condition
+     * checks need to be done within the method body itself. For example, if the
+     * second card advantage is only invoked when a token is used then you must
+     * check that here.
+     * 
+     * @param myAction
+     *            The player's final action.
+     * @param opponentAction
+     *            The opponent's final action.
+     */
+    public void applySecondCardAdvantageBeforeEvaluation(Action myAction, Action opponentAction) {
+        return;
+    }
+
+    /**
      * Update the state of the card dependent on the performed roll. This method
      * is typically called once per round at the beginning. In most cards, this
      * method will add tokens to the card depending on what was rolled.
