@@ -14,6 +14,39 @@ public class Action {
     private boolean useSpecialAbilityBefore;
     private boolean useSpecialAbilityAfter;
 
+    // damage to inflict on opponent when attacking
+    private Damage damageOpponent = new Damage(1, -1);
+    // damage to receive when attacked
+    private Damage damageReceive = new Damage(1, 0);
+
+    public class Damage {
+        private int factor; // multiplicative effect
+        private int delta; // additive effect
+
+        public Damage(int factor, int delta) {
+            super();
+            this.factor = factor;
+            this.delta = delta;
+        }
+
+        public int getFactor() {
+            return factor;
+        }
+
+        public void setFactor(int factor) {
+            this.factor = factor;
+        }
+
+        public int getDelta() {
+            return delta;
+        }
+
+        public void setDelta(int delta) {
+            this.delta = delta;
+        }
+
+    }
+
     // Indicates if already the best action for the current round
     private boolean bestAction;
 
@@ -83,18 +116,35 @@ public class Action {
     /**
      * Runs before evaluating the attack against the other card.
      * 
-     * @param against
-     *            The other card.
+     * @param opponent
+     *            The opponent's card.
      */
-    protected void applySpecialAbilityBefore(Card against) {
+    protected void applySpecialAbilityBefore(Action opponent) {
     }
 
     /**
      * Runs after evaluating the attack against the other card.
      * 
-     * @param against
+     * @param opponent
+     *            The opponent's card.
      */
-    protected void applySpecialAbilityAfter(Card against) {
+    protected void applySpecialAbilityAfter(Action opponent) {
+    }
+
+    public Damage getDamageOpponent() {
+        return damageOpponent;
+    }
+
+    public void setDamageOpponent(Damage damageOpponent) {
+        this.damageOpponent = damageOpponent;
+    }
+
+    public Damage getDamageReceive() {
+        return damageReceive;
+    }
+
+    public void setDamageReceive(Damage damageReceive) {
+        this.damageReceive = damageReceive;
     }
 
     /**
@@ -125,20 +175,34 @@ public class Action {
     public static void evaluateActions(Action one, Action two) {
         // Before Hooks
         if (one.useSpecialAbilityBefore) {
-            one.applySpecialAbilityBefore(two.getCard());
+            one.applySpecialAbilityBefore(two);
         }
 
         if (two.useSpecialAbilityBefore) {
-            two.applySpecialAbilityBefore(one.getCard());
+            two.applySpecialAbilityBefore(one);
         }
 
         two.getCard().applySecondCardAdvantageBeforeEvaluation(two, one);
 
         // Apply Attack
+        Action attacker = null;
+        Action receiver = null;
         if (one.getAttack() > two.getAttack()) {
-            --two.card.health;
+            attacker = one;
+            receiver = two;
         } else if (one.getAttack() < two.getAttack()) {
-            --one.card.health;
+            attacker = two;
+            receiver = one;
+        }
+
+        if (attacker != null && receiver != null) {
+            // Calculate how much change in health should occur
+            // Factors in the attacker's damage ability
+            // Factors in the receiver's damage ability
+            int deltaHealth = (attacker.getDamageOpponent().getDelta() + receiver.getDamageReceive().getDelta())
+                    * attacker.getDamageOpponent().getFactor() * receiver.getDamageReceive().getFactor();
+
+            receiver.getCard().setHealth(receiver.getCard().getHealth() + deltaHealth);
         }
 
         // Apply Token Loss
@@ -152,11 +216,11 @@ public class Action {
 
         // After Hooks
         if (one.useSpecialAbilityAfter) {
-            one.applySpecialAbilityAfter(two.getCard());
+            one.applySpecialAbilityAfter(two);
         }
 
         if (two.useSpecialAbilityAfter) {
-            two.applySpecialAbilityAfter(one.getCard());
+            two.applySpecialAbilityAfter(one);
         }
     }
 

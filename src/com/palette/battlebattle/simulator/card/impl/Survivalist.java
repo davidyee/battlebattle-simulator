@@ -13,7 +13,7 @@ public class Survivalist extends Card {
         }
 
         @Override
-        protected void applySpecialAbilityBefore(Card against) {
+        protected void applySpecialAbilityBefore(Action opponent) {
             // Swap the battle dice with health
             int hp = getCard().getHealth();
             getCard().setHealth(getAttack());
