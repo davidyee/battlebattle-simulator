@@ -203,6 +203,7 @@ public class Action {
                     * attacker.getDamageOpponent().getFactor() * receiver.getDamageReceive().getFactor();
 
             receiver.getCard().setHealth(receiver.getCard().getHealth() + deltaHealth);
+            receiver.getCard().applyPassiveAfterLostHealth(attacker, deltaHealth);
         }
 
         // Apply Token Loss
