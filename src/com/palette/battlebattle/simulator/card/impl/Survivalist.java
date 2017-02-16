@@ -8,8 +8,8 @@ public class Survivalist extends Card {
 
     public class SurvivalistAction extends Action {
 
-        public SurvivalistAction(Card card, boolean useToken, int attack) {
-            super(card, useToken, attack);
+        public SurvivalistAction(boolean goingFirst, Card card, boolean useToken, int attack) {
+            super(goingFirst, card, useToken, attack);
         }
 
         @Override
@@ -27,6 +27,9 @@ public class Survivalist extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
+        if (myRoll.isBestAction())
+            return myRoll;
+
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
 
         // Play conservatively!
@@ -37,16 +40,25 @@ public class Survivalist extends Card {
             boolean isGoodRisk = (myRoll.getResult(theirRoll) == State.LOSE || myRoll.getResult(theirRoll) == State.TIE)
                     && getHealth() <= 2;
             if (isGoingToLose || isGoodRisk) {
-                Action action = new Action(this, true, myRoll.getAttack());
+                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack());
                 action.setSpecialAbilityBefore(true);
-                LOGGER.debug(String.format(
-                        "%s is going to use a token in order to swap health with the rolled dice value (%d)!",
-                        this.getClass().getSimpleName(), myRoll.getAttack()));
                 return action;
             }
         }
 
-        return myRoll;
+        Action action = new Action(myRoll);
+        action.setBestAction(true);
+        return action;
+    }
+
+    @Override
+    public String getCombatDebugString(Action finalAction, Action finalOpponentAction) {
+        if (finalAction.isUseToken()) {
+            return String.format("%s is going to use a token in order to swap health with the rolled dice value (%d)!",
+                    this.getClass().getSimpleName(), finalAction.getAttack());
+        }
+
+        return "";
     }
 
 }

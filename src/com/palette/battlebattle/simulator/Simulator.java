@@ -138,8 +138,8 @@ public class Simulator {
             }
 
             // Generate initial actions
-            Action firstAction = new Action(first);
-            Action secondAction = new Action(second);
+            Action firstAction = new Action(true, first);
+            Action secondAction = new Action(false, second);
 
             // Apply the pre-passive abilities
             first.getCard().applyPassiveBeforeEvaluation(firstAction, secondAction);
@@ -147,7 +147,11 @@ public class Simulator {
 
             // Modify actions based on tokens
             Action newFirstAction = first.getCard().getBestAction(firstAction, secondAction);
+            // apply the +1 token if necessary
+            first.getCard().applyResultOfRoll(newFirstAction.getAttack());
             Action newSecondAction = second.getCard().getBestAction(secondAction, newFirstAction);
+            // apply the +1 token if necessary
+            second.getCard().applyResultOfRoll(newSecondAction.getAttack());
 
             // Apply the actions
             Action.evaluateActions(newFirstAction, newSecondAction);

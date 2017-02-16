@@ -14,12 +14,14 @@ public class TheBanker extends Card {
     public Action getBestAction(Action myRoll, Action theirRoll) {
         if (myRoll.isTokenAvailable() && !myRoll.isUseToken()) {
             if (myRoll.getAttack() + ROLL_BONUS >= theirRoll.getAttack()) {
-                Action action = new Action(this, true, myRoll.getAttack() + ROLL_BONUS);
+                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + ROLL_BONUS);
                 return action;
             }
         }
 
-        return myRoll;
+        Action action = new Action(myRoll);
+        action.setBestAction(true);
+        return action;
     }
 
     @Override

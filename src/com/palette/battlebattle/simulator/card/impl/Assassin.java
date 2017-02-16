@@ -25,14 +25,23 @@ public class Assassin extends Card {
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
         if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) == State.LOSE) {
             if (myRoll.getAttack() * 2 >= theirRoll.getAttack()) {
-                Action action = new Action(this, true, myRoll.getAttack() * 2);
-                LOGGER.debug(String.format("%s is going to use a token to double their roll!",
-                        this.getClass().getSimpleName(), myRoll.getAttack() * 2));
+                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() * 2);
                 return action;
             }
         }
 
-        return myRoll;
+        Action action = new Action(myRoll);
+        action.setBestAction(true);
+        return action;
     }
 
+    @Override
+    public String getCombatDebugString(Action finalAction, Action finalOpponentAction) {
+        if (finalAction.isUseToken()) {
+            return String.format("%s is going to use a token to double their roll!",
+                    this.getClass().getSimpleName(), finalAction.getAttack() * 2);
+        }
+
+        return "";
+    }
 }

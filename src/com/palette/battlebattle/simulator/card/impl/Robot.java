@@ -18,17 +18,30 @@ public class Robot extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
+        if (myRoll.isBestAction())
+            return myRoll;
+
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
         if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) != State.WIN) {
             if (myRoll.getAttack() + bonusDamage >= theirRoll.getAttack() && tokens > 0) {
-                Action action = new Action(this, true, myRoll.getAttack() + bonusDamage);
-                LOGGER.debug(String.format("%s is going to use a token to add %d more to their roll!",
-                        this.getClass().getSimpleName(), bonusDamage));
+                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + bonusDamage);
                 return action;
             }
         }
 
-        return myRoll;
+        Action action = new Action(myRoll);
+        action.setBestAction(true);
+        return action;
+    }
+
+    @Override
+    public String getCombatDebugString(Action finalAction, Action finalOpponentAction) {
+        if (finalAction.isUseToken()) {
+            return String.format("%s is going to use a token to add %d more to their roll!",
+                    this.getClass().getSimpleName(), bonusDamage);
+        }
+
+        return "";
     }
 
 }

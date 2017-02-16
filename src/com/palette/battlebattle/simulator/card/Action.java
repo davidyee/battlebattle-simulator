@@ -9,6 +9,7 @@ package com.palette.battlebattle.simulator.card;
 public class Action {
     private final Card card;
     private final boolean useToken;
+    private final boolean goingFirst;
     private int attack;
     private final int initialAttack; // keeps track of the initial attack value
     private boolean useSpecialAbilityBefore;
@@ -51,11 +52,16 @@ public class Action {
     private boolean bestAction;
 
     public enum State {
-        WIN, LOSE, TIE;
+        WIN, LOSE, TIE, UNKNOWN;
     }
 
-    public Action(Card card, boolean useToken, int attack) {
+    public Action(Action copy) {
+        this(copy.isGoingFirst(), copy.getCard(), copy.isUseToken(), copy.getAttack());
+    }
+
+    public Action(boolean goingFirst, Card card, boolean useToken, int attack) {
         super();
+        this.goingFirst = goingFirst;
         this.card = card;
         this.useToken = useToken;
         this.attack = attack;
@@ -65,8 +71,9 @@ public class Action {
             bestAction = true;
     }
 
-    public Action(Attack attack) {
+    public Action(boolean goingFirst, Attack attack) {
         super();
+        this.goingFirst = goingFirst;
         this.card = attack.getCard();
         this.useToken = false;
         this.attack = attack.getRoll();
@@ -83,6 +90,14 @@ public class Action {
 
     public boolean isTokenAvailable() {
         return card.tokens > 0;
+    }
+
+    public boolean isGoingFirst() {
+        return goingFirst;
+    }
+
+    public boolean isGoingSecond() {
+        return !goingFirst;
     }
 
     public void setAttack(int attack) {
@@ -148,6 +163,17 @@ public class Action {
     }
 
     /**
+     * Indicates if the card can receive damage.
+     * 
+     * @return <b>true</b> if the card can be damaged; <b>false</b> otherwise.
+     */
+    public boolean isDamageable() {
+        if (damageReceive.getDelta() == 0 && damageReceive.getFactor() == 0)
+            return false;
+        return true;
+    }
+
+    /**
      * Determine if this action will win, lose, or tie against another action.
      * 
      * @param opponent
@@ -183,6 +209,13 @@ public class Action {
         }
 
         two.getCard().applySecondCardAdvantageBeforeEvaluation(two, one);
+
+        final String oneCombatDebug = one.getCard().getCombatDebugString(one, two);
+        final String twoCombatDebug = two.getCard().getCombatDebugString(two, one);
+        if (oneCombatDebug != null && !oneCombatDebug.isEmpty())
+            Card.LOGGER.debug("1. " + oneCombatDebug);
+        if (twoCombatDebug != null && !twoCombatDebug.isEmpty())
+            Card.LOGGER.debug("2. " + twoCombatDebug);
 
         // Apply Attack
         Action attacker = null;

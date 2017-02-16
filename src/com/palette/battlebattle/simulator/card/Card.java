@@ -81,16 +81,29 @@ public abstract class Card {
     public void applySecondCardAdvantageBeforeEvaluation(Action myAction, Action opponentAction) {
         return;
     }
-    
+
     /**
      * Called when the card loses health as a result of losing a battle against
      * the attacking card.
      * 
-     * @param attacker The attacking card that won the round.
-     * @param deltaHealth The amount of health gained or lost (delta amount).
+     * @param attacker
+     *            The attacking card that won the round.
+     * @param deltaHealth
+     *            The amount of health gained or lost (delta amount).
      */
     public void applyPassiveAfterLostHealth(Action attacker, int deltaHealth) {
         return;
+    }
+
+    /**
+     * Get the string that appears during combat to print out while debugging.
+     * 
+     * @param finalAction
+     * @param finalOpponentAction
+     * @return
+     */
+    public String getCombatDebugString(Action finalAction, Action finalOpponentAction) {
+        return "";
     }
 
     /**

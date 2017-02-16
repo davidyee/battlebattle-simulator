@@ -19,21 +19,32 @@ public class Trickster extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
+        if (myRoll.isBestAction())
+            return myRoll;
+
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
         if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) != State.WIN) {
             // Play conservatively!
             // Don't use your token unless you are going to lose!
-            if (myRoll.getResult(theirRoll) == State.LOSE && tokens > 0) {
+            if (myRoll.getResult(theirRoll) == State.LOSE) {
                 int roll = roll();
-                applyResultOfRoll(roll); // apply the +1 token if necessary
-                Action action = new Action(this, true, roll);
-                LOGGER.debug(String.format("%s is going to use a token in order to re-roll!",
-                        this.getClass().getSimpleName()));
+                Action action = new Action(myRoll.isGoingFirst(), this, true, roll);
                 return action;
             }
         }
 
-        return myRoll;
+        Action action = new Action(myRoll);
+        action.setBestAction(true);
+        return action;
+    }
+
+    @Override
+    public String getCombatDebugString(Action finalAction, Action finalOpponentAction) {
+        if (finalAction.isUseToken()) {
+            return String.format("%s is going to use a token in order to re-roll!", this.getClass().getSimpleName());
+        }
+
+        return "";
     }
 
 }

@@ -11,16 +11,26 @@ public class Wimp extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
-        myRoll.setBestAction(true);
-        return myRoll;
+        Action action = new Action(myRoll);
+        action.setBestAction(true);
+        return action;
     }
 
     @Override
     public void applyPassiveBeforeEvaluation(Action myAction, Action opponentAction) {
         if (getHealth() < opponentAction.getCard().getHealth()) {
-            LOGGER.debug(String.format("%s increases their roll strength by 3 due to a lower health!",
-                    this.getClass().getSimpleName()));
             myAction.setAttack(myAction.getAttack() + 3);
         }
     }
+
+    @Override
+    public String getCombatDebugString(Action finalAction, Action finalOpponentAction) {
+        if (getHealth() < finalOpponentAction.getCard().getHealth()) {
+            return String.format("%s increases their roll strength by 3 due to a lower health!",
+                    this.getClass().getSimpleName());
+        }
+
+        return "";
+    }
+
 }

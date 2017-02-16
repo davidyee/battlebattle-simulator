@@ -10,8 +10,8 @@ public class TheGambler extends Card {
 
     private class TheGamblerAction extends Action {
 
-        public TheGamblerAction(Card card, boolean useToken, int attack) {
-            super(card, useToken, attack);
+        public TheGamblerAction(boolean goingFirst, Card card, boolean useToken, int attack) {
+            super(goingFirst, card, useToken, attack);
         }
 
         @Override
@@ -29,31 +29,33 @@ public class TheGambler extends Card {
     public TheGambler() {
         super(5, 3);
     }
-    
+
     @Override
     public int roll() {
         int roll = super.roll();
-        if(roll == 3 || roll == 4) {
+        if (roll == 3 || roll == 4) {
             return super.roll();
         }
-        
+
         return roll;
     }
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
+        if (myRoll.isBestAction())
+            return myRoll;
+
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
         if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) == State.LOSE) {
-            Action action = new TheGamblerAction(this, true, myRoll.getAttack());
+            Action action = new TheGamblerAction(myRoll.isGoingFirst(), this, true, myRoll.getAttack());
             action.setSpecialAbilityBefore(true);
             action.setSpecialAbilityAfter(true);
-            LOGGER.debug(String.format(
-                    "%s is going to become immune for this round and increase everyone's health damage by %d next round!",
-                    this.getClass().getSimpleName(), DAMAGE_FACTOR));
             return action;
         }
 
-        return myRoll;
+        Action action = new Action(myRoll);
+        action.setBestAction(true);
+        return action;
     }
 
     @Override
@@ -65,4 +67,14 @@ public class TheGambler extends Card {
         }
     }
 
+    @Override
+    public String getCombatDebugString(Action finalAction, Action finalOpponentAction) {
+        if (finalAction.isUseToken()) {
+            return String.format(
+                    "%s is going to become immune for this round and increase everyone's health damage by %d next round!",
+                    this.getClass().getSimpleName(), DAMAGE_FACTOR);
+        }
+
+        return "";
+    }
 }
