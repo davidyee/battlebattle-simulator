@@ -5,7 +5,7 @@ import com.palette.battlebattle.simulator.card.Action.State;
 import com.palette.battlebattle.simulator.card.Card;
 
 public class Robot extends Card {
-    int bonusDamage = 2;
+    private int bonusDamage = 2;
 
     public Robot() {
         super(6, 4);

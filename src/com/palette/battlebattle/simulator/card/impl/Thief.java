@@ -13,8 +13,9 @@ public class Thief extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
-        if (myRoll.isTokenAvailable() && !myRoll.isUseToken()) {
-            if (myRoll.getAttack() + 2 >= theirRoll.getAttack() && tokens > 0) {
+        boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
+        if (isTokenAvailableAndNotYetUsed) {
+            if (myRoll.getAttack() + 2 >= theirRoll.getAttack()) {
                 Action action = new Action(this, true, myRoll.getAttack() + 2);
                 return action;
             }
