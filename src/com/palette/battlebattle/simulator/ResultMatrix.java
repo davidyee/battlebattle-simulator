@@ -22,7 +22,7 @@ public class ResultMatrix {
     }
 
     public ResultMatrix(List<Class<? extends Card>> cards) {
-        cardNames = cards.stream().map(Class::getSimpleName).collect(Collectors.toList());
+        cardNames = cards.stream().map(Class::getSimpleName).sorted().collect(Collectors.toList());
         cardResults = new ArrayList<>(cardNames.size());
 
         for (int i = 0; i < cardNames.size(); ++i) {
