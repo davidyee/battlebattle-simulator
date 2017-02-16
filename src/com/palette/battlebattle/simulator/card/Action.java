@@ -190,6 +190,10 @@ public class Action {
         }
     }
 
+    public Action copy() {
+        return new Action(this);
+    }
+
     /**
      * Applies the actions to the card states.
      * 
@@ -258,4 +262,60 @@ public class Action {
         }
     }
 
+    /**
+     * Determines whether it is best to use the given default action or the
+     * bonus action, factoring in the tie-breaking card attribute and the order
+     * of the actions. You need to check if the bonus action is permissible
+     * (e.g. there is enough tokens to actually perform this action) before
+     * applying this function to a round simulation.
+     * 
+     * @param opponent
+     *            The opponent's default action.
+     * @param myDefaultAction
+     *            The player's default action.
+     * @param myBonusAction
+     *            The player's special action (e.g. with extra damage applied,
+     *            token used, etc.)
+     * @return The best of either the default action or the bonus action.
+     */
+    public static Action getBestActionBetweenDefaultActionAndBonusAction(Action opponent, Action myDefaultAction,
+            Action myBonusAction) {
+        if (myDefaultAction.getCard().equals(myBonusAction.getCard()) == false) {
+            throw new IllegalArgumentException("The default action and the bonus action must be of the same card!");
+        }
+
+        myDefaultAction = myDefaultAction.copy();
+        myBonusAction = myBonusAction.copy();
+
+        myDefaultAction.setBestAction(true);
+        myBonusAction.setBestAction(true);
+
+        Action theirActionToOurDefaultAction = opponent.getCard().getBestAction(opponent, myDefaultAction);
+        Action theirActionToOurBonusAction = opponent.getCard().getBestAction(opponent, myBonusAction);
+
+        Action result;
+
+        State theirStateToOurDefaultAction = theirActionToOurDefaultAction.getResult(myDefaultAction);
+        boolean isWinnableWithoutBonus = (theirStateToOurDefaultAction == State.LOSE);
+        if (myDefaultAction.getCard().isWinsTies()) {
+            isWinnableWithoutBonus |= (theirStateToOurDefaultAction == State.TIE);
+        }
+        
+        boolean isWinnableWithBonus = theirActionToOurBonusAction.getResult(myBonusAction) == State.LOSE
+                || theirActionToOurBonusAction.getResult(myBonusAction) == State.TIE;
+        boolean willLoseGoingSecond = myDefaultAction.isGoingSecond() && isWinnableWithBonus
+                && theirActionToOurBonusAction.getResult(myDefaultAction) == State.WIN;
+        boolean forceOpponentToUseToken = !isWinnableWithoutBonus && !isWinnableWithBonus && myDefaultAction.isGoingFirst();
+        if (isWinnableWithoutBonus && !willLoseGoingSecond) {
+            // do nothing because we'll win anyways
+            result = myDefaultAction;
+        } else if (isWinnableWithBonus || forceOpponentToUseToken) {
+            // will win OR may just force them to also spend a token
+            result = myBonusAction;
+        } else {
+            result = myDefaultAction;
+        }
+
+        return result;
+    }
 }

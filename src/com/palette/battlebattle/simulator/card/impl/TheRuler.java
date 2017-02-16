@@ -34,7 +34,7 @@ public class TheRuler extends Card {
             return action;
         }
 
-        Action action = new Action(myRoll);
+        Action action = myRoll.copy();
         action.setBestAction(true);
         return action;
     }

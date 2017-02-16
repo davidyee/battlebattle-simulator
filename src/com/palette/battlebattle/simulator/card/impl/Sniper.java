@@ -11,7 +11,7 @@ public class Sniper extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
-        Action action = new Action(myRoll);
+        Action action = myRoll.copy();
         action.setBestAction(true);
         return action;
     }

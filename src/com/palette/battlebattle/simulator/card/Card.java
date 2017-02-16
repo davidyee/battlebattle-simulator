@@ -15,12 +15,19 @@ public abstract class Card {
     protected int health;
     protected int tokens;
 
+    protected final boolean winsTies;
+
     private final Random random = new Random();
 
     public Card(int health, int tokens) {
+        this(health, tokens, false);
+    }
+
+    public Card(int health, int tokens, boolean winsTies) {
         super();
         this.health = health;
         this.tokens = tokens;
+        this.winsTies = winsTies;
     }
 
     /**
@@ -144,4 +151,8 @@ public abstract class Card {
         return tokens;
     }
 
+    public boolean isWinsTies() {
+        return winsTies;
+    }
+    
 }

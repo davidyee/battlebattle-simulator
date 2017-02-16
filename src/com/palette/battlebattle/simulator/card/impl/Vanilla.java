@@ -1,7 +1,6 @@
 package com.palette.battlebattle.simulator.card.impl;
 
 import com.palette.battlebattle.simulator.card.Action;
-import com.palette.battlebattle.simulator.card.Action.State;
 import com.palette.battlebattle.simulator.card.Card;
 
 public class Vanilla extends Card {
@@ -19,37 +18,12 @@ public class Vanilla extends Card {
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
 
         if (isTokenAvailableAndNotYetUsed) {
-            Action actionWithoutBonus = new Action(myRoll);
-            actionWithoutBonus.setBestAction(true); // fake best action
-
-            Action actionWithBonus = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + bonusDamage);
-            actionWithBonus.setBestAction(true); // fake best action
-
-            Action theirActionToOurActionWithoutBonus = theirRoll.getCard().getBestAction(theirRoll,
-                    actionWithoutBonus);
-            Action theirActionToOurActionWithBonus = theirRoll.getCard().getBestAction(theirRoll, actionWithBonus);
-
-            Action result;
-
-            boolean isWinnableWithoutBonus = theirActionToOurActionWithoutBonus
-                    .getResult(actionWithoutBonus) == State.LOSE;
-            boolean isWinnableWithBonus = theirActionToOurActionWithBonus.getResult(actionWithBonus) == State.LOSE
-                    || theirActionToOurActionWithBonus.getResult(actionWithBonus) == State.TIE;
-            boolean willLoseGoingSecond = myRoll.isGoingSecond() && isWinnableWithBonus
-                    && theirActionToOurActionWithBonus.getResult(actionWithoutBonus) == State.WIN;
-            if (isWinnableWithoutBonus && !willLoseGoingSecond) {
-                // do nothing because we'll win anyways
-                result = actionWithoutBonus;
-            } else if (isWinnableWithBonus) {
-                result = actionWithBonus;
-            } else {
-                result = actionWithoutBonus;
-            }
-
-            return result;
+            Action defaultAction = myRoll.copy();
+            Action bonusAction = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + bonusDamage);
+            return Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
-        Action action = new Action(myRoll);
+        Action action = myRoll.copy();
         action.setBestAction(true);
         return action;
     }

@@ -1,19 +1,18 @@
 package com.palette.battlebattle.simulator.card.impl;
 
 import com.palette.battlebattle.simulator.card.Action;
-import com.palette.battlebattle.simulator.card.Action.State;
 import com.palette.battlebattle.simulator.card.Card;
 
 public class TheGeneral extends Card {
     private static final int ROLL_ADJUSTMENT = 1;
 
-    private class TheGeneralAction extends Action {
-        public TheGeneralAction(boolean goingFirst, Card card, boolean useToken, int attack) {
-            super(goingFirst, card, useToken, attack);
-        }
-
+    public class TheGeneralAction extends Action {
         public TheGeneralAction(Action copy) {
             super(copy);
+        }
+        
+        public TheGeneralAction(boolean goingFirst, Card card, boolean useToken, int attack) {
+            super(goingFirst, card, useToken, attack);
         }
 
         @Override
@@ -30,10 +29,15 @@ public class TheGeneral extends Card {
                 return State.WIN;
             return s;
         }
+        
+        @Override
+        public Action copy() {
+            return new TheGeneralAction(this);
+        }
     }
 
     public TheGeneral() {
-        super(4, 3);
+        super(4, 3, true);
     }
 
     @Override
@@ -51,36 +55,14 @@ public class TheGeneral extends Card {
             return myRoll;
 
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
-        Action action = new Action(myRoll);
+        Action action = new TheGeneralAction(myRoll);
 
         if (isTokenAvailableAndNotYetUsed) {
-            Action actionWithoutBonus = new TheGeneralAction(myRoll);
-            actionWithoutBonus.setBestAction(true); // fake best action
-
-            Action actionWithBonus = new TheGeneralAction(myRoll.isGoingFirst(), this, true,
+            Action defaultAction = new TheGeneralAction(myRoll);
+            Action bonusAction = new TheGeneralAction(myRoll.isGoingFirst(), this, true,
                     myRoll.getAttack() + ROLL_ADJUSTMENT);
-            actionWithBonus.setBestAction(true); // fake best action
 
-            Action theirActionToOurActionWithoutBonus = theirRoll.getCard().getBestAction(theirRoll,
-                    actionWithoutBonus);
-            Action theirActionToOurActionWithBonus = theirRoll.getCard().getBestAction(theirRoll, actionWithBonus);
-
-            boolean isWinnableWithoutBonus = theirActionToOurActionWithoutBonus
-                    .getResult(actionWithoutBonus) == State.LOSE
-                    || theirActionToOurActionWithoutBonus.getResult(actionWithoutBonus) == State.TIE;
-            boolean isWinnableWithBonus = theirActionToOurActionWithBonus.getResult(actionWithBonus) == State.LOSE
-                    || theirActionToOurActionWithBonus.getResult(actionWithBonus) == State.TIE;
-            boolean willLoseGoingSecond = myRoll.isGoingSecond() && isWinnableWithBonus
-                    && theirActionToOurActionWithBonus.getResult(actionWithoutBonus) == State.WIN;
-
-            if (isWinnableWithoutBonus && !willLoseGoingSecond) {
-                // do nothing because we'll win anyways
-                action = actionWithoutBonus;
-            } else if (isWinnableWithBonus) {
-                action = actionWithBonus;
-            } else {
-                action = actionWithoutBonus;
-            }
+            action = Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
         action.setSpecialAbilityBefore(true);
