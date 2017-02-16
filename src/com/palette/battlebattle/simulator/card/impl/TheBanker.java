@@ -12,11 +12,15 @@ public class TheBanker extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
-        if (myRoll.isTokenAvailable() && !myRoll.isUseToken()) {
-            if (myRoll.getAttack() + ROLL_BONUS >= theirRoll.getAttack()) {
-                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + ROLL_BONUS);
-                return action;
-            }
+        if (myRoll.isBestAction())
+            return myRoll;
+        
+        boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
+        if (isTokenAvailableAndNotYetUsed) {
+            Action defaultAction = new Action(myRoll);
+            Action bonusAction = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + ROLL_BONUS);
+
+            return Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
         Action action = myRoll.copy();

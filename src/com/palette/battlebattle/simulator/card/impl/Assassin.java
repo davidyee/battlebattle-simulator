@@ -1,7 +1,6 @@
 package com.palette.battlebattle.simulator.card.impl;
 
 import com.palette.battlebattle.simulator.card.Action;
-import com.palette.battlebattle.simulator.card.Action.State;
 import com.palette.battlebattle.simulator.card.Card;
 
 public class Assassin extends Card {
@@ -22,12 +21,15 @@ public class Assassin extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
+        if (myRoll.isBestAction())
+            return myRoll;
+        
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
-        if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) == State.LOSE) {
-            if (myRoll.getAttack() * 2 >= theirRoll.getAttack()) {
-                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() * 2);
-                return action;
-            }
+        if (isTokenAvailableAndNotYetUsed) {
+            Action defaultAction = new Action(myRoll);
+            Action bonusAction = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() * 2);
+
+            return Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
         Action action = new Action(myRoll);

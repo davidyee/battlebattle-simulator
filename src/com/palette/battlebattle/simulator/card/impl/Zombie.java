@@ -19,6 +19,9 @@ public class Zombie extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
+        if (myRoll.isBestAction())
+            return myRoll;
+        
         Action action = new Action(myRoll.isGoingFirst(), this, false, myRoll.getAttack());
         action.setBestAction(true);
 

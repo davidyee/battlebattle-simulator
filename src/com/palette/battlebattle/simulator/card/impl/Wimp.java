@@ -11,6 +11,9 @@ public class Wimp extends Card {
 
     @Override
     public Action getBestAction(Action myRoll, Action theirRoll) {
+        if (myRoll.isBestAction())
+            return myRoll;
+
         Action action = myRoll.copy();
         action.setBestAction(true);
         return action;

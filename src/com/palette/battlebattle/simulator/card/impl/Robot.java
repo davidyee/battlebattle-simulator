@@ -23,10 +23,10 @@ public class Robot extends Card {
 
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
         if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) != State.WIN) {
-            if (myRoll.getAttack() + bonusDamage >= theirRoll.getAttack() && tokens > 0) {
-                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + bonusDamage);
-                return action;
-            }
+            Action defaultAction = new Action(myRoll);
+            Action bonusAction = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + bonusDamage);
+
+            return Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
         Action action = myRoll.copy();

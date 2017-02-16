@@ -17,10 +17,10 @@ public class Thief extends Card {
 
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
         if (isTokenAvailableAndNotYetUsed) {
-            if (myRoll.getAttack() + 2 >= theirRoll.getAttack()) {
-                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + 2);
-                return action;
-            }
+            Action defaultAction = new Action(myRoll);
+            Action bonusAction = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack() + 2);
+
+            return Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
         Action action = myRoll.copy();
@@ -30,6 +30,11 @@ public class Thief extends Card {
 
     @Override
     public void applyPassiveBeforeEvaluation(Action myAction, Action opponentAction) {
+        if (addDamageNextRound > 0) {
+            LOGGER.debug(String.format("%s added %d to their original roll of %d!", this.getClass().getSimpleName(),
+                    addDamageNextRound, myAction.getAttack()));
+        }
+
         myAction.setAttack(myAction.getAttack() + addDamageNextRound);
         addDamageNextRound = 0;
     }
@@ -41,23 +46,20 @@ public class Thief extends Card {
             if (attackerTokens > 0) {
                 attacker.getCard().setTokens(attackerTokens - 1);
                 ++tokens;
+                LOGGER.debug(String.format("%s stole a token!", this.getClass().getSimpleName()));
             } else {
                 // Add two damage next round
                 addDamageNextRound = 2;
+                LOGGER.debug(String.format(
+                        "%s is going to add %d more to their roll next round because the opponent is out of tokens!",
+                        this.getClass().getSimpleName(), addDamageNextRound));
             }
         }
     }
 
     @Override
     public String getCombatDebugString(Action finalAction, Action finalOpponentAction) {
-        int attackerTokens = finalOpponentAction.getCard().getTokens();
-        if (attackerTokens > 0) {
-            return String.format("%s stole a token!", this.getClass().getSimpleName());
-        } else {
-            return String.format(
-                    "%s is going to add %d more to their roll next round because the opponent is out of tokens!",
-                    this.getClass().getSimpleName(), addDamageNextRound);
-        }
+        return "";
     }
 
 }

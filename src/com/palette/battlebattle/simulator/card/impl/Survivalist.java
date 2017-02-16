@@ -8,16 +8,26 @@ public class Survivalist extends Card {
 
     public class SurvivalistAction extends Action {
 
-        public SurvivalistAction(boolean goingFirst, Card card, boolean useToken, int attack) {
-            super(goingFirst, card, useToken, attack);
+        public SurvivalistAction(Action copy) {
+            super(copy);
         }
 
+        public SurvivalistAction(boolean goingFirst, Card card, boolean useToken, int attack) {
+            super(goingFirst, card, useToken, attack);
+            setSpecialAbilityBefore(useToken);
+        }
+        
         @Override
         protected void applySpecialAbilityBefore(Action opponent) {
             // Swap the battle dice with health
             int hp = getCard().getHealth();
             getCard().setHealth(getAttack());
             setAttack(hp);
+        }
+        
+        @Override
+        public Action copy() {
+            return new SurvivalistAction(this);
         }
     }
 
@@ -40,8 +50,7 @@ public class Survivalist extends Card {
             boolean isGoodRisk = (myRoll.getResult(theirRoll) == State.LOSE || myRoll.getResult(theirRoll) == State.TIE)
                     && getHealth() <= 2;
             if (isGoingToLose || isGoodRisk) {
-                Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack());
-                action.setSpecialAbilityBefore(true);
+                Action action = new SurvivalistAction(myRoll.isGoingFirst(), this, true, myRoll.getAttack());
                 return action;
             }
         }

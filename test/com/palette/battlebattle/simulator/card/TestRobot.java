@@ -16,7 +16,7 @@ public class TestRobot extends TestCard {
 
     @Test
     public void testRobotThief() throws InstantiationException, IllegalAccessException {
-        Result[] results = ct.runTest(10000, Robot.class, Thief.class);
+        Result[] results = ct.runTest(1, Robot.class, Thief.class);
         LOGGER.info(ct.getFormattedOutput(results));
     }
 

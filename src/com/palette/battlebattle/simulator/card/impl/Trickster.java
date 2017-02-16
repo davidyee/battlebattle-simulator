@@ -1,10 +1,10 @@
 package com.palette.battlebattle.simulator.card.impl;
 
 import com.palette.battlebattle.simulator.card.Action;
-import com.palette.battlebattle.simulator.card.Action.State;
 import com.palette.battlebattle.simulator.card.Card;
 
 public class Trickster extends Card {
+    private Integer virtualRoll = null;
 
     public Trickster() {
         super(4, 0);
@@ -23,14 +23,18 @@ public class Trickster extends Card {
             return myRoll;
 
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
-        if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) != State.WIN) {
+        if (isTokenAvailableAndNotYetUsed) {
             // Play conservatively!
             // Don't use your token unless you are going to lose!
-            if (myRoll.getResult(theirRoll) == State.LOSE) {
-                int roll = roll();
-                Action action = new Action(myRoll.isGoingFirst(), this, true, roll);
-                return action;
-            }
+            
+            // Roll and save the result until all evaluation is complete
+            // This technique makes the simulation more predictable
+            if(virtualRoll == null) virtualRoll = roll();
+            
+            Action defaultAction = new Action(myRoll);
+            Action bonusAction = new Action(myRoll.isGoingFirst(), this, true, virtualRoll);
+
+            return Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
         Action action = myRoll.copy();
@@ -45,6 +49,11 @@ public class Trickster extends Card {
         }
 
         return "";
+    }
+    
+    @Override
+    public void applyPassiveAfterEvaluation(Action myAction, Action opponentAction) {
+        virtualRoll = null; // reset the "virtual roll"
     }
 
 }

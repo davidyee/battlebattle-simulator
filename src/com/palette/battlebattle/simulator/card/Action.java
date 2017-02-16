@@ -232,6 +232,15 @@ public class Action {
             receiver = one;
         }
 
+        // Apply Token Loss
+        if (one.useToken) {
+            --one.card.tokens;
+        }
+
+        if (two.useToken) {
+            --two.card.tokens;
+        }
+
         if (attacker != null && receiver != null) {
             // Calculate how much change in health should occur
             // Factors in the attacker's damage ability
@@ -241,15 +250,6 @@ public class Action {
 
             receiver.getCard().setHealth(receiver.getCard().getHealth() + deltaHealth);
             receiver.getCard().applyPassiveAfterLostHealth(attacker, deltaHealth);
-        }
-
-        // Apply Token Loss
-        if (one.useToken) {
-            --one.card.tokens;
-        }
-
-        if (two.useToken) {
-            --two.card.tokens;
         }
 
         // After Hooks
@@ -300,12 +300,13 @@ public class Action {
         if (myDefaultAction.getCard().isWinsTies()) {
             isWinnableWithoutBonus |= (theirStateToOurDefaultAction == State.TIE);
         }
-        
+
         boolean isWinnableWithBonus = theirActionToOurBonusAction.getResult(myBonusAction) == State.LOSE
                 || theirActionToOurBonusAction.getResult(myBonusAction) == State.TIE;
         boolean willLoseGoingSecond = myDefaultAction.isGoingSecond() && isWinnableWithBonus
                 && theirActionToOurBonusAction.getResult(myDefaultAction) == State.WIN;
-        boolean forceOpponentToUseToken = !isWinnableWithoutBonus && !isWinnableWithBonus && myDefaultAction.isGoingFirst();
+        boolean forceOpponentToUseToken = !isWinnableWithoutBonus && !isWinnableWithBonus
+                && myDefaultAction.isGoingFirst();
         if (isWinnableWithoutBonus && !willLoseGoingSecond) {
             // do nothing because we'll win anyways
             result = myDefaultAction;

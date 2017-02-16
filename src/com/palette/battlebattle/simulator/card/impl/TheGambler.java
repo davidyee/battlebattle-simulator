@@ -9,9 +9,15 @@ public class TheGambler extends Card {
     private boolean multiplyDamage = false;
 
     private class TheGamblerAction extends Action {
+        
+        public TheGamblerAction(Action copy) {
+            super(copy);
+        }
 
         public TheGamblerAction(boolean goingFirst, Card card, boolean useToken, int attack) {
             super(goingFirst, card, useToken, attack);
+            setSpecialAbilityBefore(useToken);
+            setSpecialAbilityAfter(useToken);
         }
 
         @Override
@@ -24,6 +30,10 @@ public class TheGambler extends Card {
             multiplyDamage = true;
         }
 
+        @Override
+        public Action copy() {
+            return new TheGamblerAction(this);
+        }
     }
 
     public TheGambler() {
@@ -47,10 +57,10 @@ public class TheGambler extends Card {
 
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
         if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) == State.LOSE) {
-            Action action = new TheGamblerAction(myRoll.isGoingFirst(), this, true, myRoll.getAttack());
-            action.setSpecialAbilityBefore(true);
-            action.setSpecialAbilityAfter(true);
-            return action;
+            Action defaultAction = new TheGamblerAction(myRoll);
+            Action bonusAction = new TheGamblerAction(myRoll.isGoingFirst(), this, true, myRoll.getAttack());
+
+            return Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
         Action action = myRoll.copy();

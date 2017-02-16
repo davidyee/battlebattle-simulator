@@ -1,10 +1,28 @@
 package com.palette.battlebattle.simulator.card.impl;
 
 import com.palette.battlebattle.simulator.card.Action;
-import com.palette.battlebattle.simulator.card.Action.State;
 import com.palette.battlebattle.simulator.card.Card;
 
 public class TheRuler extends Card {
+
+    public class TheRulerAction extends Action {
+
+        public TheRulerAction(Action copy) {
+            super(copy);
+        }
+
+        public TheRulerAction(boolean goingFirst, Card card, boolean useToken, int attack) {
+            super(goingFirst, card, useToken, attack);
+            if (useToken) {
+                setAttack(Integer.MAX_VALUE);
+            }
+        }
+
+        @Override
+        public Action copy() {
+            return new TheRulerAction(this);
+        }
+    }
 
     public TheRuler() {
         super(4, 2);
@@ -28,10 +46,11 @@ public class TheRuler extends Card {
 
         // Play conservatively!
         // Don't use your token unless you are going to lose!
-        if (isTokenAvailableAndNotYetUsed && myRoll.getResult(theirRoll) == State.LOSE) {
-            Action action = new Action(myRoll.isGoingFirst(), this, true, myRoll.getAttack());
-            action.setAttack(Integer.MAX_VALUE);
-            return action;
+        if (isTokenAvailableAndNotYetUsed) {
+            Action defaultAction = new TheRulerAction(myRoll);
+            Action bonusAction = new TheRulerAction(myRoll.isGoingFirst(), this, true, myRoll.getAttack());
+
+            return Action.getBestActionBetweenDefaultActionAndBonusAction(theirRoll, defaultAction, bonusAction);
         }
 
         Action action = myRoll.copy();
@@ -48,5 +67,5 @@ public class TheRuler extends Card {
 
         return "";
     }
-    
+
 }
