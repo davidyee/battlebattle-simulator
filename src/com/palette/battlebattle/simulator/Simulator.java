@@ -60,6 +60,12 @@ public class Simulator {
         if (cardSets.size() > 0) {
             LOGGER.info(
                     String.format("Running simulation for %d card sets...", cardSets.size()) + System.lineSeparator());
+
+            /*
+             * This loop runs in serial but it can run in parallel; however, if
+             * you are reading the debug output it may not appear in the correct
+             * order.
+             */
             for (CardSet cs : cardSets) {
                 Result[] results = ct.runTest(NUMBER_OF_ROUNDS, cs.getOne(), cs.getTwo());
                 LOGGER.debug(ct.getFormattedOutput(results));
@@ -96,7 +102,7 @@ public class Simulator {
      *         optional otherwise.
      */
     public static Optional<Card> playCards(Card one, Card two) {
-        int maxRounds = 1000;
+        int maxRounds = 100;
         int currentRound = 1;
 
         final String oneName = one.getClass().getSimpleName();
@@ -169,7 +175,9 @@ public class Simulator {
             ++currentRound;
         }
 
-        if (one.getHealth() > 0 && two.getHealth() > 0) {
+        boolean bothAlive = one.getHealth() > 0 && two.getHealth() > 0;
+        boolean bothDead = one.getHealth() <= 0 && two.getHealth() <= 0;
+        if (bothAlive || bothDead) {
             LOGGER.debug("Result: TIE!");
             return Optional.empty();
         } else if (one.getHealth() > 0) {
