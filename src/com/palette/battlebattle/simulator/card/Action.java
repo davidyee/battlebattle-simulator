@@ -221,6 +221,11 @@ public class Action {
         if (twoCombatDebug != null && !twoCombatDebug.isEmpty())
             Card.LOGGER.debug("2. " + twoCombatDebug);
 
+        if (one.getCard().getHealth() <= 0 || two.getCard().getHealth() <= 0) {
+            // it's already game over because a card has already died
+            return;
+        }
+
         // Apply Attack
         Action attacker = null;
         Action receiver = null;

@@ -28,3 +28,5 @@ log4j.logger.com.palette.battlebattle.simulator.card.Card=TRACE, cardappender
 The Simulator currently has the following limitations:
 
 * The simulation applies token-requiring powers only once. In other words, cards cannot pay for a power twice in order to apply the ability twice in a given round.
+
+* The simulation does not evaluate the sensibility of a round in the context of possible future rounds. It only considers whether an action can produce a winnable outcome for the current round and if a token should be spent or not.
