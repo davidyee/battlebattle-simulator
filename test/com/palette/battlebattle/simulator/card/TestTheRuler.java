@@ -10,14 +10,14 @@ public class TestTheRuler extends TestCard {
 
     @Test
     public void testTheRulerTheRuler() throws InstantiationException, IllegalAccessException {
-        Result[] results = ct.runTest(1, TheRuler.class, TheRuler.class);
-        LOGGER.info(ct.getFormattedOutput(results));
+        Result[] results = CardTester.runTest(1, TheRuler.class, TheRuler.class);
+        LOGGER.info(CardTester.getFormattedOutput(results));
     }
 
     @Test
     public void testTheRulerAssassin() throws InstantiationException, IllegalAccessException {
-        Result[] results = ct.runTest(1, TheRuler.class, Assassin.class);
-        LOGGER.info(ct.getFormattedOutput(results));
+        Result[] results = CardTester.runTest(1, TheRuler.class, Assassin.class);
+        LOGGER.info(CardTester.getFormattedOutput(results));
     }
 
 }

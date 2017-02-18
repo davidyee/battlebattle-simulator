@@ -1,5 +1,7 @@
 package com.palette.battlebattle.simulator.card;
 
+import java.util.Optional;
+
 /**
  * Represents an action taken by a given {@link Card}, including state
  * information such as attack strength and if a token was used or not.
@@ -8,6 +10,7 @@ package com.palette.battlebattle.simulator.card;
  */
 public class Action {
     private final Card card;
+    private Card morphCard; // to support morphing
     private final boolean useToken;
     private final boolean goingFirst;
     private int attack;
@@ -82,6 +85,27 @@ public class Action {
 
     public Card getCard() {
         return card;
+    }
+
+    /**
+     * Morph the card into a different card. The actual morph may not be applied
+     * immediately but later on during the simulation process.
+     * 
+     * @param morphCard
+     *            The new card to morph into.
+     */
+    public void setMorphCard(Card morphCard) {
+        this.morphCard = morphCard;
+    }
+
+    /**
+     * Get the new card to morph into.
+     * 
+     * @return The new card wrapped within an optional if the morph was
+     *         requested; otherwise, an empty optional.
+     */
+    public Optional<Card> getMorphCard() {
+        return Optional.ofNullable(morphCard);
     }
 
     public boolean isUseToken() {

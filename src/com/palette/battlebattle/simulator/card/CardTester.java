@@ -13,7 +13,7 @@ public class CardTester {
      *
      * @author David Yee
      */
-    public class Result {
+    public static class Result {
         private final String name;
         private final int wins;
 
@@ -36,7 +36,7 @@ public class CardTester {
         }
     }
 
-    public Result[] runTest(int numGames, Class<? extends Card> card1Class, Class<? extends Card> card2Class)
+    public static Result[] runTest(int numGames, Class<? extends Card> card1Class, Class<? extends Card> card2Class)
             throws InstantiationException, IllegalAccessException {
         Optional<Card> maybeResult;
 
@@ -72,7 +72,7 @@ public class CardTester {
      * @return A formatted string of the results, including the percentage of
      *         wins.
      */
-    public String getFormattedOutput(Result... results) {
+    public static String getFormattedOutput(Result... results) {
         StringBuilder sb = new StringBuilder(64);
         int total = Stream.of(results).map(r -> r.wins).mapToInt(Integer::intValue).sum();
 

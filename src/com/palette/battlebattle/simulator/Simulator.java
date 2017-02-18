@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
-import org.reflections.Reflections;
 
 import com.palette.battlebattle.simulator.card.Action;
 import com.palette.battlebattle.simulator.card.Attack;
@@ -34,29 +33,36 @@ public class Simulator {
     private static final Logger LOGGER = Logger.getLogger(Simulator.class);
     private static final int NUMBER_OF_ROUNDS = 1000;
 
-    /**
-     * Runs the simulation with all cards implemented. The cards to simulate are
-     * found via reflection, permutated with one another, and then simulated.
-     * 
-     * @param args
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    public static void main(String[] args) throws InstantiationException, IllegalAccessException {
-        CardTester ct = new CardTester();
-        Reflections reflections = new Reflections("com.palette.battlebattle.simulator.card.impl");
-        Set<Class<? extends Card>> cardsFound = reflections.getSubTypesOf(Card.class);
-        List<Class<? extends Card>> cardsList = new ArrayList<>(cardsFound);
+    private final Set<Class<? extends Card>> cardClasses;
+    private final Set<CardSet> cardSets = new LinkedHashSet<>();
 
-        Set<CardSet> cardSets = new LinkedHashSet<>();
+    /**
+     * Simulates gameplay between cards.
+     * <p>
+     * The cards to simulate are found via reflection and permutated with one
+     * another.
+     */
+    public Simulator() {
+        cardClasses = Card.getCards();
+        List<Class<? extends Card>> cardsList = new ArrayList<>(cardClasses);
+
         for (Class<? extends Card> card : cardsList) {
             for (Class<? extends Card> card2 : cardsList) {
                 CardSet cardSet = new CardSet(card, card2);
                 cardSets.add(cardSet);
             }
         }
+    }
 
-        ResultMatrix resultMatrix = new ResultMatrix(cardsList);
+    /**
+     * Performs a simulation and retrieves the result matrix.
+     * 
+     * @return The results of the simulation for each combination of cards.
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public ResultMatrix runSimulation() throws InstantiationException, IllegalAccessException {
+        ResultMatrix resultMatrix = new ResultMatrix(cardClasses);
         if (cardSets.size() > 0) {
             LOGGER.info(
                     String.format("Running simulation for %d card sets...", cardSets.size()) + System.lineSeparator());
@@ -67,8 +73,8 @@ public class Simulator {
              * order.
              */
             for (CardSet cs : cardSets) {
-                Result[] results = ct.runTest(NUMBER_OF_ROUNDS, cs.getOne(), cs.getTwo());
-                LOGGER.debug(ct.getFormattedOutput(results));
+                Result[] results = CardTester.runTest(NUMBER_OF_ROUNDS, cs.getOne(), cs.getTwo());
+                LOGGER.debug(CardTester.getFormattedOutput(results));
 
                 int total = Stream.of(results).map(Result::getWins).mapToInt(Integer::intValue).sum();
                 resultMatrix.insertResult(results[0], results[1], total);
@@ -77,6 +83,18 @@ public class Simulator {
             LOGGER.error("No cards found! Please check that card implementations exist in the correct package!");
         }
 
+        return resultMatrix;
+    }
+
+    /**
+     * Output the results. Outputs to stdout when logging is enabled. Also
+     * outputs to a results CSV file with the current date and time keyed into
+     * the file name.
+     * 
+     * @param resultMatrix
+     *            The result matrix from a simulation that was previously run.
+     */
+    public void outputResults(ResultMatrix resultMatrix) {
         LOGGER.info(resultMatrix.getPrettyMatrix());
 
         // Output to file
@@ -92,6 +110,19 @@ public class Simulator {
     }
 
     /**
+     * Runs the simulation with all cards implemented.
+     * 
+     * @param args
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public static void main(String[] args) throws InstantiationException, IllegalAccessException {
+        Simulator simulator = new Simulator();
+        ResultMatrix results = simulator.runSimulation();
+        simulator.outputResults(results);
+    }
+
+    /**
      * Simulates the gameplay between two given cards.
      * 
      * @param one
@@ -101,7 +132,7 @@ public class Simulator {
      * @return The card that won and wrapped within an optional; an empty
      *         optional otherwise.
      */
-    public static Optional<Card> playCards(Card one, Card two) {
+    public static Optional<Card> playCards(final Card one, final Card two) {
         int maxRounds = 100;
         int currentRound = 1;
 
@@ -110,37 +141,47 @@ public class Simulator {
 
         LOGGER.debug(String.format("%s vs %s", oneName, twoName));
 
-        while (one.getHealth() > 0 && two.getHealth() > 0 && maxRounds > 0) {
+        /*
+         * Below are mutable references thereby allowing cards to mutate during
+         * the dual; however, we keep the original card references and names for
+         * the sake of the final simulation result.
+         */
+        Card roundCardOne = one;
+        String roundCardOneName = oneName;
+        Card roundCardTwo = two;
+        String roundCardTwoName = twoName;
+
+        while (roundCardOne.getHealth() > 0 && roundCardTwo.getHealth() > 0 && maxRounds > 0) {
             String identation = "  ";
             LOGGER.debug(identation + String.format("Round #%d:", currentRound));
             identation = "    ";
 
-            LOGGER.debug(identation
-                    + String.format("  %s has %d hp and %d tokens.", oneName, one.getHealth(), one.getTokens()));
-            LOGGER.debug(identation
-                    + String.format("  %s has %d hp and %d tokens.", twoName, two.getHealth(), two.getTokens()));
+            LOGGER.debug(identation + String.format("  %s has %d hp and %d tokens.", roundCardOneName,
+                    roundCardOne.getHealth(), roundCardOne.getTokens()));
+            LOGGER.debug(identation + String.format("  %s has %d hp and %d tokens.", roundCardTwoName,
+                    roundCardTwo.getHealth(), roundCardTwo.getTokens()));
 
-            int oneRoll = one.roll();
-            int twoRoll = two.roll();
+            int oneRoll = roundCardOne.roll();
+            int twoRoll = roundCardTwo.roll();
 
-            one.applyResultOfRoll(oneRoll);
-            two.applyResultOfRoll(twoRoll);
+            roundCardOne.applyResultOfRoll(oneRoll);
+            roundCardTwo.applyResultOfRoll(twoRoll);
 
-            LOGGER.debug(identation + String.format("  %s rolled a %d.", oneName, oneRoll));
-            LOGGER.debug(identation + String.format("  %s rolled a %d.", twoName, twoRoll));
+            LOGGER.debug(identation + String.format("  %s rolled a %d.", roundCardOneName, oneRoll));
+            LOGGER.debug(identation + String.format("  %s rolled a %d.", roundCardTwoName, twoRoll));
 
-            Attack oneAttack = new Attack(one, oneRoll);
-            Attack twoAttack = new Attack(two, twoRoll);
+            Attack oneAttack = new Attack(roundCardOne, oneRoll);
+            Attack twoAttack = new Attack(roundCardTwo, twoRoll);
 
             // Determine who gets to go first
             Attack first = Attack.getAttackThatGoesFirst(oneAttack, twoAttack);
             Attack second;
             if (first == oneAttack) {
                 second = twoAttack;
-                LOGGER.trace(identation + String.format("  %s gets to go first.", oneName));
+                LOGGER.trace(identation + String.format("  %s gets to go first.", roundCardOneName));
             } else {
                 second = oneAttack;
-                LOGGER.trace(identation + String.format("  %s gets to go first.", twoName));
+                LOGGER.trace(identation + String.format("  %s gets to go first.", roundCardTwoName));
             }
 
             // Generate initial actions
@@ -162,25 +203,49 @@ public class Simulator {
             // Apply the actions
             Action.evaluateActions(newFirstAction, newSecondAction);
 
+            // Check if the cards have changed during the evaluation
+            // This clause supports morphing card abilities
+            if (newFirstAction.getMorphCard().isPresent()) {
+                Card morphedCard = newFirstAction.getMorphCard().get();
+                if (roundCardOne == newFirstAction.getCard()) {
+                    roundCardOne = morphedCard;
+                    roundCardOneName = morphedCard.getClass().getSimpleName();
+                } else {
+                    roundCardTwo = morphedCard;
+                    roundCardTwoName = morphedCard.getClass().getSimpleName();
+                }
+            }
+
+            if (newSecondAction.getMorphCard().isPresent()) {
+                Card morphedCard = newSecondAction.getMorphCard().get();
+                if (roundCardOne == newSecondAction.getCard()) {
+                    roundCardOne = morphedCard;
+                    roundCardOneName = morphedCard.getClass().getSimpleName();
+                } else {
+                    roundCardTwo = morphedCard;
+                    roundCardTwoName = morphedCard.getClass().getSimpleName();
+                }
+            }
+
             // Apply the post-passive abilities
             first.getCard().applyPassiveAfterEvaluation(newFirstAction, newSecondAction);
             second.getCard().applyPassiveAfterEvaluation(newSecondAction, newFirstAction);
 
-            LOGGER.debug(identation
-                    + String.format("  %s has %d hp and %d tokens.", oneName, one.getHealth(), one.getTokens()));
-            LOGGER.debug(identation
-                    + String.format("  %s has %d hp and %d tokens.", twoName, two.getHealth(), two.getTokens()));
+            LOGGER.debug(identation + String.format("  %s has %d hp and %d tokens.", roundCardOneName,
+                    roundCardOne.getHealth(), roundCardOne.getTokens()));
+            LOGGER.debug(identation + String.format("  %s has %d hp and %d tokens.", roundCardTwoName,
+                    roundCardTwo.getHealth(), roundCardTwo.getTokens()));
 
             --maxRounds;
             ++currentRound;
         }
 
-        boolean bothAlive = one.getHealth() > 0 && two.getHealth() > 0;
-        boolean bothDead = one.getHealth() <= 0 && two.getHealth() <= 0;
+        boolean bothAlive = roundCardOne.getHealth() > 0 && roundCardTwo.getHealth() > 0;
+        boolean bothDead = roundCardOne.getHealth() <= 0 && roundCardTwo.getHealth() <= 0;
         if (bothAlive || bothDead) {
             LOGGER.debug("Result: TIE!");
             return Optional.empty();
-        } else if (one.getHealth() > 0) {
+        } else if (roundCardOne.getHealth() > 0) {
             LOGGER.debug(String.format("Result: %s WON!", oneName));
             return Optional.of(one);
         } else {

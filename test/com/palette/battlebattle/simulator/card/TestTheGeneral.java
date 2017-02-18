@@ -10,8 +10,8 @@ public class TestTheGeneral extends TestCard {
 
     @Test
     public void testTheGeneralVanilla() throws InstantiationException, IllegalAccessException {
-        Result[] results = ct.runTest(1, TheGeneral.class, Vanilla.class);
-        LOGGER.info(ct.getFormattedOutput(results));
+        Result[] results = CardTester.runTest(1, TheGeneral.class, Vanilla.class);
+        LOGGER.info(CardTester.getFormattedOutput(results));
     }
 
 }

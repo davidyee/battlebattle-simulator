@@ -1,8 +1,10 @@
 package com.palette.battlebattle.simulator.card;
 
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.reflections.Reflections;
 
 /**
  * Represents a vanilla <code>Card</code> in the BattleBattle card game.
@@ -154,5 +156,10 @@ public abstract class Card {
     public boolean isWinsTies() {
         return winsTies;
     }
-    
+
+    public static final Set<Class<? extends Card>> getCards() {
+        Reflections reflections = new Reflections("com.palette.battlebattle.simulator.card.impl");
+        Set<Class<? extends Card>> cardClasses = reflections.getSubTypesOf(Card.class);
+        return cardClasses;
+    }
 }

@@ -9,8 +9,8 @@ public class TestThief extends TestCard {
 
     @Test
     public void testThiefThief() throws InstantiationException, IllegalAccessException {
-        Result[] results = ct.runTest(10000, Thief.class, Thief.class);
-        LOGGER.info(ct.getFormattedOutput(results));
+        Result[] results = CardTester.runTest(10000, Thief.class, Thief.class);
+        LOGGER.info(CardTester.getFormattedOutput(results));
     }
 
 }

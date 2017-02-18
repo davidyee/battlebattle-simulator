@@ -10,8 +10,8 @@ public class TestTheGambler extends TestCard {
 
     @Test
     public void testTheGamblerRobot() throws InstantiationException, IllegalAccessException {
-        Result[] results = ct.runTest(1, TheGambler.class, Robot.class);
-        LOGGER.info(ct.getFormattedOutput(results));
+        Result[] results = CardTester.runTest(1, TheGambler.class, Robot.class);
+        LOGGER.info(CardTester.getFormattedOutput(results));
     }
 
 }
