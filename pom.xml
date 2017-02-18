@@ -4,6 +4,7 @@
   <artifactId>battlebattle-simulator</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <build>
+    <finalName>BattleBattle Simulator</finalName>
     <sourceDirectory>src</sourceDirectory>
     <testSourceDirectory>test</testSourceDirectory>
     <plugins>
@@ -15,6 +16,15 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+      <plugin>
+	    <groupId>com.zenjava</groupId>
+	    <artifactId>javafx-maven-plugin</artifactId>
+	    <version>8.8.3</version>
+	    <configuration>
+	      <vendor>David Yee</vendor>
+	      <mainClass>com.davidvyee.battlebattle.simulator.ui.SimulatorApplication</mainClass>
+	    </configuration>
+	</plugin>
     </plugins>
   </build>
   <dependencies>
@@ -28,5 +38,10 @@
   		<artifactId>reflections</artifactId>
   		<version>0.9.10</version>
   	</dependency>
+  	<dependency>
+        <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	    <version>4.12</version>
+	</dependency>
   </dependencies>
 </project>

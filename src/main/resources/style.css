@@ -1,0 +1,22 @@
+.hyperlink {
+    -fx-border-color: transparent;
+    -fx-padding: 4 0 4 0;
+}
+
+.table-row-cell:empty {
+    -fx-background-color: white;
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}
+
+.default-color8.chart-bar { -fx-bar-fill: aquamarine; }
+.default-color9.chart-bar { -fx-bar-fill: chartreuse; }
+.default-color11.chart-bar { -fx-bar-fill: cyan; }
+.default-color12.chart-bar { -fx-bar-fill: deeppink; }
+.default-color13.chart-bar { -fx-bar-fill: sienna; }
+.default-color14.chart-bar { -fx-bar-fill: indigo; }
+.default-color15.chart-bar { -fx-bar-fill: darkslategray; }
+.default-color16.chart-bar { -fx-bar-fill: #660066; }
+.default-color17.chart-bar { -fx-bar-fill: black; }

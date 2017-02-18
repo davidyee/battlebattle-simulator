@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+
+
+<TableView fx:id="table" editable="true" tableMenuButtonVisible="true" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.davidvyee.battlebattle.simulator.ui.card.CardsTableController">
+  <columns>
+    <TableColumn fx:id="tcName" editable="false" minWidth="50.0" text="Name" />
+    <TableColumn fx:id="tcHealth" minWidth="50.0" text="Health" />
+      <TableColumn fx:id="tcTokens" minWidth="50.0" text="Tokens" />
+      <TableColumn fx:id="tcSimulate" minWidth="50.0" prefWidth="100.0" text="Simulate" />
+  </columns>
+</TableView>
