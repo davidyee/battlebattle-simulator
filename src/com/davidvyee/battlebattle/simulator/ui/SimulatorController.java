@@ -84,8 +84,29 @@ public class SimulatorController {
         Set<Class<? extends Card>> cardsSet = Card.getCardClasses();
         cards = new ArrayList<>(cardsSet.size());
 
+        List<CardDto> customCards = new ArrayList<>();
+
         for (Class<? extends Card> card : cardsSet) {
-            cards.add(new CardDto(card.newInstance()));
+            Card newCard = card.newInstance();
+            CardDto newCardDto = new CardDto(newCard);
+
+            String cardName = newCard.getClass().getSimpleName();
+            if (cardName.endsWith("Custom") && !cardName.equals("Custom")) {
+                customCards.add(newCardDto);
+            }
+
+            cards.add(newCardDto);
+        }
+
+        // Disable the original if a custom implementation is found
+        for (CardDto cardDto : customCards) {
+            Card newCard = cardDto.getCard();
+            String cardName = newCard.getClass().getSimpleName();
+            String parentCardName = cardName.substring(0, cardName.lastIndexOf("Custom"));
+            cards.stream().filter(cd -> cd.getCard().getClass().getSimpleName().equals(parentCardName)).findAny()
+                    .ifPresent(parentCard -> {
+                        parentCard.simulateProperty().set(false);
+                    });
         }
 
         Collections.sort(cards, (card1, card2) -> {
