@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ TestRobot.class, TestThief.class, TestTheRuler.class, TestTheGambler.class, TestTheGambler.class,
-        TestClone.class })
+        TestClone.class, TestZombie.class })
 public class AllTests {
 
 }

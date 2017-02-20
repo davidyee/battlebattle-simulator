@@ -138,7 +138,7 @@ public abstract class Card {
      *         number between 1 and 6.
      */
     public int roll() {
-        return random.nextInt(7) + 1;
+        return random.nextInt(6) + 1;
     }
 
     public void setHealth(int health) {
