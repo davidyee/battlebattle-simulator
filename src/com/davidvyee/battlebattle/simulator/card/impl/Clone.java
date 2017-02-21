@@ -80,7 +80,7 @@ public class Clone extends Card {
 
         boolean isTokenAvailableAndNotYetUsed = myRoll.isTokenAvailable() && !myRoll.isUseToken();
         if (isTokenAvailableAndNotYetUsed) {
-            if (getHealth() == 1) {
+            if (getHealth() == 1 || theirRoll.getCard().getNumberOfExtraAttackDice() >= 2) {
                 action = new CloneAction(myRoll);
                 action.setSpecialAbilityBefore(true);
             }

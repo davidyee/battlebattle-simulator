@@ -16,9 +16,12 @@ public abstract class Card {
 
     private int health;
     private int tokens;
-    private boolean simulate = true;
 
+    // Special variables
+    private boolean simulate = true;
     private final boolean winsTies;
+    private boolean alwaysGoesFirst = false;
+    private int numberOfExtraAttackDice = 2;
 
     private final Random random = new Random();
 
@@ -34,6 +37,8 @@ public abstract class Card {
 
     public Card(Card copy) {
         this(copy.getHealth(), copy.getTokens(), copy.isWinsTies());
+        alwaysGoesFirst = copy.isAlwaysGoesFirst();
+        numberOfExtraAttackDice = copy.getNumberOfExtraAttackDice();
     }
 
     /**
@@ -176,6 +181,22 @@ public abstract class Card {
 
     public boolean isWinsTies() {
         return winsTies;
+    }
+
+    public boolean isAlwaysGoesFirst() {
+        return alwaysGoesFirst;
+    }
+
+    public void setAlwaysGoesFirst(boolean alwaysGoesFirst) {
+        this.alwaysGoesFirst = alwaysGoesFirst;
+    }
+
+    public int getNumberOfExtraAttackDice() {
+        return numberOfExtraAttackDice;
+    }
+
+    public void setNumberOfExtraAttackDice(int numberOfExtraDice) {
+        this.numberOfExtraAttackDice = numberOfExtraDice;
     }
 
     public static final Set<Class<? extends Card>> getCardClasses() {

@@ -6,7 +6,6 @@ import com.davidvyee.battlebattle.simulator.card.Card;
 public class Barbarian extends Card {
     private int damageBonus = 1;
     private int damageReceiveFactor = 2;
-    private int numberOfExtraDice = 2;
 
     public Barbarian() {
         super(6, 0);
@@ -20,7 +19,6 @@ public class Barbarian extends Card {
         super(copy);
         damageBonus = copy.damageBonus;
         damageReceiveFactor = copy.damageReceiveFactor;
-        numberOfExtraDice = copy.numberOfExtraDice;
     }
 
     @Override
@@ -43,7 +41,7 @@ public class Barbarian extends Card {
         int opponentHealth = opponentAction.getCard().getHealth();
         int bonusDamage = 0;
 
-        for (int i = 0; i < numberOfExtraDice; ++i) {
+        for (int i = 0; i < getNumberOfExtraAttackDice(); ++i) {
             int roll = super.roll();
             if (roll > opponentAction.getInitialAttack()) {
                 bonusDamage += damageBonus;
@@ -55,7 +53,7 @@ public class Barbarian extends Card {
         if (bonusDamage > 0) {
             LOGGER.debug(String.format(
                     "%s rolled %d extra dice and beat the opponent's initial roll of %d to do a total extra damage of %d!",
-                    this.getClass().getSimpleName(), numberOfExtraDice, opponentAction.getInitialAttack(),
+                    this.getClass().getSimpleName(), getNumberOfExtraAttackDice(), opponentAction.getInitialAttack(),
                     bonusDamage));
         }
 
@@ -88,14 +86,6 @@ public class Barbarian extends Card {
 
     protected void setDamageReceiveFactor(int damageReceiveFactor) {
         this.damageReceiveFactor = damageReceiveFactor;
-    }
-
-    protected int getNumberOfExtraDice() {
-        return numberOfExtraDice;
-    }
-
-    protected void setNumberOfExtraDice(int numberOfExtraDice) {
-        this.numberOfExtraDice = numberOfExtraDice;
     }
 
     @Override
