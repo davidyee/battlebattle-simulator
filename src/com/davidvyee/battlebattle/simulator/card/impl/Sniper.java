@@ -13,6 +13,10 @@ public class Sniper extends Card {
         super(health, tokens);
     }
 
+    public Sniper(int health, int tokens, boolean winsTies) {
+        super(health, tokens, winsTies);
+    }
+
     public Sniper(Sniper copy) {
         super(copy);
     }

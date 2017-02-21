@@ -16,6 +16,7 @@ public class Trickster extends Card {
 
     public Trickster(Trickster copy) {
         super(copy);
+        virtualRoll = copy.virtualRoll;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class Trickster extends Card {
             // Roll and save the result until all evaluation is complete
             // This technique makes the simulation more predictable
             if (virtualRoll == null)
-                virtualRoll = roll();
+                virtualRoll = super.roll();
 
             Action defaultAction = new Action(myRoll);
             Action bonusAction = new Action(myRoll.isGoingFirst(), this, true, virtualRoll);

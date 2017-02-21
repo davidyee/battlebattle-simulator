@@ -10,8 +10,9 @@ public class Wizard extends Card {
     public class WizardAction extends Action {
         boolean isBonusDamage = false;
 
-        public WizardAction(Action copy) {
+        public WizardAction(WizardAction copy) {
             super(copy);
+            isBonusDamage = copy.isBonusDamage;
         }
 
         public WizardAction(boolean goingFirst, Card card, boolean useToken, int attack) {
@@ -22,7 +23,7 @@ public class Wizard extends Card {
         protected void applySpecialAbilityBefore(Action opponent) {
             if (isBonusDamage) {
                 int opponentHealth = opponent.getCard().getHealth();
-                opponent.getCard().setHealth(opponentHealth - bonusDamage);
+                opponent.getCard().setHealth(opponentHealth - bonusDamage * opponent.getDamageReceive().getFactor());
             } else { // does no damage
                 getDamageOpponent().setFactor(0);
             }
@@ -44,6 +45,7 @@ public class Wizard extends Card {
 
     public Wizard(Wizard copy) {
         super(copy);
+        bonusDamage = copy.bonusDamage;
     }
 
     /**

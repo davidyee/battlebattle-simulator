@@ -13,6 +13,7 @@
 
 .default-color8.chart-bar { -fx-bar-fill: aquamarine; }
 .default-color9.chart-bar { -fx-bar-fill: chartreuse; }
+.default-color10.chart-bar { -fx-bar-fill: darkred; }
 .default-color11.chart-bar { -fx-bar-fill: cyan; }
 .default-color12.chart-bar { -fx-bar-fill: deeppink; }
 .default-color13.chart-bar { -fx-bar-fill: sienna; }

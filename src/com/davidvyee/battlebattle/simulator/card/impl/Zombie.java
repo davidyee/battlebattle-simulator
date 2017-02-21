@@ -30,7 +30,7 @@ public class Zombie extends Card {
     }
 
     public Zombie() {
-        super(4, 0);
+        this(4, 0);
     }
 
     public Zombie(int health, int tokens) {

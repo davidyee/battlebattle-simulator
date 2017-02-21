@@ -4,7 +4,7 @@ import com.davidvyee.battlebattle.simulator.card.Action;
 import com.davidvyee.battlebattle.simulator.card.Card;
 
 public class Thief extends Card {
-    int addDamageNextRound = 0;
+    protected int addDamageNextRound = 0;
 
     public Thief() {
         super(4, 0);
@@ -16,6 +16,7 @@ public class Thief extends Card {
 
     public Thief(Thief copy) {
         super(copy);
+        addDamageNextRound = copy.addDamageNextRound;
     }
 
     @Override

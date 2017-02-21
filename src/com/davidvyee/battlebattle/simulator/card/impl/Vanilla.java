@@ -16,6 +16,7 @@ public class Vanilla extends Card {
 
     public Vanilla(Vanilla copy) {
         super(copy);
+        bonusDamage = copy.bonusDamage;
     }
 
     @Override

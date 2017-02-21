@@ -5,7 +5,7 @@ import com.davidvyee.battlebattle.simulator.card.Card;
 import com.davidvyee.battlebattle.simulator.card.Action.State;
 
 public class Robot extends Card {
-    private int bonusDamage = 2;
+    protected int bonusDamage = 2;
 
     public Robot() {
         super(6, 4);
@@ -17,6 +17,7 @@ public class Robot extends Card {
 
     public Robot(Robot copy) {
         super(copy);
+        bonusDamage = copy.bonusDamage;
     }
 
     @Override

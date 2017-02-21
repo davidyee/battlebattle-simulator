@@ -33,6 +33,10 @@ public class Action {
             this.delta = delta;
         }
 
+        public Damage(Damage copy) {
+            this(copy.factor, copy.delta);
+        }
+
         public int getFactor() {
             return factor;
         }
@@ -60,6 +64,10 @@ public class Action {
 
     public Action(Action copy) {
         this(copy.isGoingFirst(), copy.getCard(), copy.isUseToken(), copy.getAttack());
+        useSpecialAbilityBefore = copy.useSpecialAbilityBefore;
+        useSpecialAbilityAfter = copy.useSpecialAbilityAfter;
+        damageOpponent = new Damage(copy.getDamageOpponent());
+        damageReceive = new Damage(copy.getDamageReceive());
     }
 
     public Action(boolean goingFirst, Card card, boolean useToken, int attack) {

@@ -46,6 +46,7 @@ public class TheGambler extends Card {
 
     public TheGambler(TheGambler copy) {
         super(copy);
+        copy.multiplyDamage = multiplyDamage;
     }
 
     @Override

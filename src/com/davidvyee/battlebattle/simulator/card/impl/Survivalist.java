@@ -54,7 +54,7 @@ public class Survivalist extends Card {
         // Don't use your token unless you are going to lose!
         // Take a slight risk if tied or lost and health is very low
         if (isTokenAvailableAndNotYetUsed) {
-            boolean isGoingToLose = myRoll.getResult(theirRoll) == State.LOSE && getHealth() == 1;
+            boolean isGoingToLose = myRoll.getResult(theirRoll) == State.LOSE && getHealth() <= 2;
             boolean isGoodRisk = (myRoll.getResult(theirRoll) == State.LOSE || myRoll.getResult(theirRoll) == State.TIE)
                     && getHealth() <= 2;
             if (isGoingToLose || isGoodRisk) {

@@ -60,7 +60,7 @@ public class Clone extends Card {
     }
 
     public Clone() {
-        super(3, 1);
+        super(2, 2);
     }
 
     public Clone(int health, int tokens) {

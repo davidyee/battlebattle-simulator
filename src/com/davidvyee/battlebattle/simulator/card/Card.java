@@ -141,6 +141,15 @@ public abstract class Card {
         return random.nextInt(6) + 1;
     }
 
+    /**
+     * Roll a standard 6-sided die. This method cannot be overridden.
+     * 
+     * @return The result of the roll between 1 and 6.
+     */
+    public static final int rollStandard() {
+        return new Random().nextInt(6) + 1;
+    }
+
     public void setHealth(int health) {
         this.health = health;
     }

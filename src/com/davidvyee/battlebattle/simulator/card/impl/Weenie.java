@@ -17,6 +17,8 @@ public class Weenie extends Card {
 
     public Weenie(Weenie copy) {
         super(copy);
+        damageBonus = copy.damageBonus;
+        numberOfExtraDice = copy.numberOfExtraDice;
     }
 
     @Override
@@ -37,11 +39,12 @@ public class Weenie extends Card {
         int bonusDamage = 0;
 
         for (int i = 0; i < numberOfExtraDice; ++i) {
-            int roll = roll();
+            int roll = super.roll();
             if (roll > opponentAction.getInitialAttack()) {
-                bonusDamage += damageBonus;
+                bonusDamage += damageBonus * myAction.getDamageOpponent().getFactor();
             }
         }
+        bonusDamage *= opponentAction.getDamageReceive().getFactor();
 
         LOGGER.debug(String.format(
                 "%s rolled %d extra dice and beat the opponent's initial roll of %d to do a total extra damage of %d!",
