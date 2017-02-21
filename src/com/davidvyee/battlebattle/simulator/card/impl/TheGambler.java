@@ -16,13 +16,8 @@ public class TheGambler extends Card {
 
         public TheGamblerAction(boolean goingFirst, Card card, boolean useToken, int attack) {
             super(goingFirst, card, useToken, attack);
-            setSpecialAbilityBefore(useToken);
-            setSpecialAbilityAfter(useToken);
-        }
-
-        @Override
-        protected void applySpecialAbilityBefore(Action opponent) {
             getDamageReceive().setFactor(0);
+            setSpecialAbilityAfter(useToken);
         }
 
         @Override
@@ -80,8 +75,8 @@ public class TheGambler extends Card {
     @Override
     public void applyPassiveBeforeEvaluation(Action myAction, Action opponentAction) {
         if (multiplyDamage) {
+            myAction.getDamageReceive().setFactor(DAMAGE_FACTOR);
             myAction.getDamageOpponent().setFactor(DAMAGE_FACTOR);
-            opponentAction.getDamageOpponent().setFactor(DAMAGE_FACTOR);
             multiplyDamage = false;
         }
     }

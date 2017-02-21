@@ -333,17 +333,18 @@ public class Action {
         Action result;
 
         State theirStateToOurDefaultAction = theirActionToOurDefaultAction.getResult(myDefaultAction);
+        State theirStateToOurBonusAction = theirActionToOurBonusAction.getResult(myBonusAction);
         boolean isWinnableWithoutBonus = (theirStateToOurDefaultAction == State.LOSE);
         if (myDefaultAction.getCard().isWinsTies()) {
             isWinnableWithoutBonus |= (theirStateToOurDefaultAction == State.TIE);
         }
 
-        boolean isWinnableWithBonus = theirActionToOurBonusAction.getResult(myBonusAction) == State.LOSE
-                || theirActionToOurBonusAction.getResult(myBonusAction) == State.TIE;
+        boolean isWinnableWithBonus = theirStateToOurBonusAction == State.LOSE
+                || theirStateToOurBonusAction == State.TIE || myBonusAction.getDamageReceive().getFactor() == 0;
         boolean willLoseGoingSecond = myDefaultAction.isGoingSecond() && isWinnableWithBonus
                 && theirActionToOurBonusAction.getResult(myDefaultAction) == State.WIN;
         boolean forceOpponentToUseToken = !isWinnableWithoutBonus && !isWinnableWithBonus
-                && myDefaultAction.isGoingFirst();
+                && myDefaultAction.isGoingFirst() && theirActionToOurBonusAction.isUseToken();
         if (isWinnableWithoutBonus && !willLoseGoingSecond) {
             // do nothing because we'll win anyways
             result = myDefaultAction;
