@@ -289,7 +289,7 @@ public class SimulatorController {
     }
 
     // Color index starts at zero
-    private static final int NUMBER_OF_COLOR_STYLES = 18;
+    private static final int NUMBER_OF_COLOR_STYLES = 19;
 
     // Method based on code from
     // http://tiwulfx.panemu.com/2013/01/07/provide-more-colors-for-chart-series/
