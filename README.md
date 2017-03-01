@@ -4,15 +4,21 @@ A Java simulator for the BattleBattle card game.
 
 ## Requirements
 
-Java 1.8+
+* Java 1.8+
+
+* Maven 
 
 ## Usage
 
-Run the main program in Simulator.java to run each combination of cards in `com.palette.battlebattle.simulator.card.impl`. The simulator outputs a results CSV file in the same directory as the program and also outputs the CSV content to standard output (stdout).
+There are two main programs in this project:
+
+1. Run the main program in SimulatorApplication.java to run the simulator with a friendly user-interface designed in JavaFX. This interface allows you to change the health and tokens of all the cards that were found on runtime in the `com.davidvyee.battlebattlesimulator.card.impl` package. You may also customize the number of simulations to run for each combination.
+
+2. Run the main program in Simulator.java to run each combination of cards in `com.davidvyee.battlebattle.simulator.card.impl`. The simulator outputs a results CSV file in the same directory as the program and also outputs the CSV content to standard output (stdout). By default, this program will run 1000 simulations per combination.
 
 ### Adding New Cards
 
-Add new cards into the `com.palette.battlebattle.simulator.card.impl` package and override the necessary methods and hooks to achieve the desired card stats and abilities. Cards that are added to this package are found on runtime via Java Reflection.
+Add new cards into the `com.davidvyee.battlebattle.simulator.card.impl` package and override the necessary methods and hooks to achieve the desired card stats and abilities. Cards that are added to this package are found on runtime via Java Reflection.
 
 ### Debugging
 
@@ -30,3 +36,4 @@ The Simulator currently has the following limitations:
 * The simulation applies token-requiring powers only once. In other words, cards cannot pay for a power twice in order to apply the ability twice in a given round.
 
 * The simulation does not evaluate the sensibility of a round in the context of possible future rounds. It only considers whether an action can produce a winnable outcome for the current round and if a token should be spent or not.
+
